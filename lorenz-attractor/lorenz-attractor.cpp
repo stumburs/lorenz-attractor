@@ -23,7 +23,6 @@ Vector3 attractor_center(const std::vector<Point>& points)
 	return { x / points.size(), y / points.size(), z / points.size() };
 }
 
-// Camera
 Camera3D camera;
 
 std::vector<Point> points;
@@ -31,33 +30,33 @@ std::vector<Point> points;
 Vector3 last_point = { 0.0f, 0.0f, 0.0f };
 
 //--------------------------------------------------------------
-// Funny values for you to modify
+// User modifiable variables
 //--------------------------------------------------------------
 int window_width = 1920;
 int window_height = 1080;
 int max_fps = 0;
 
-// Starting values (idk what they really change)
-float x = 1;
-float y = 1;
-float z = 1;
+// Starting values
+float x = 5.0f;
+float y = 5.0f;
+float z = 5.0f;
 
-// Lorenz funny numbers (they change how the shape looks)
-// Numbies here https://en.wikipedia.org/wiki/Lorenz_system#Analysis
-const float a = 19;
-const float b = 28;
-const float c = 8.0 / 3.0;
+// Lorenz values
+// https://en.wikipedia.org/wiki/Lorenz_system#Analysis
+const float a = 10.0f;				// sigma
+const float b = 28.0f;				// rho
+const float c = 8.0f / 3.0f;		// beta
 
 // Calculation time step
-// Larger numbers = faster shape making, but less accurate points (they're farther apart)
-const float time_step = 0.001;
+// Larger numbers = faster, but less accurate
+const float time_step = 0.001f;
 
-// Shape size
+// Shape scaling factor
 const float scale = 3.0;
 
 // Starting hue value
 float hue = 0.0f;
-float hue_change_per_frame = 0.003f;
+float hue_change_per_frame = 0.002f;
 
 std::size_t max_point_amount = 20000;
 
@@ -93,15 +92,13 @@ int main()
 			if (hue > 360.0f)
 				hue = 0.0f;
 
-			Point point{};
-			point.pos = { x * scale, y * scale, z * scale };
-			point.color = color;
+			Point point{ { x * scale, y * scale, z * scale }, color };
 			points.push_back(point);
 
 			if (points.size() > max_point_amount)
 				points.erase(points.begin());
 
-			// Set camera target to average of all points
+			// Set camera target to average position of all points
 			camera.target = attractor_center(points);
 		}
 
@@ -111,7 +108,6 @@ int main()
 			ClearBackground(BLACK);
 			BeginMode3D(camera);
 			{
-				DrawGrid(10, 1.0f);
 				for (auto& point : points)
 				{
 					DrawLine3D(last_point, { point.pos.x, point.pos.y, point.pos.z }, point.color);
